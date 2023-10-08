@@ -1,12 +1,12 @@
 #pragma once
 #include "node.h"
-
+#include <memory>
 template<typename T>
 class simple_link_list
 {
 protected:
+	std::shared_ptr<node<T>> real_head;
 	node<T>* head;
-	
 	node<T>* get_elem_ptr(int position) const;
 
 public:
@@ -21,21 +21,28 @@ public:
 	void clear();
 	bool pop(int position, T& e);
 	bool set_elem(int position, const T& e);
+	simple_link_list(const simple_link_list <T>& source); //initialize with copied head value
+	simple_link_list<T>&operator = (const simple_link_list <T>& source);
+	void Traverse(void (*visit) (const T&)) const;   //apply func visit to every element
 };
 
 
 template<typename T> 
 simple_link_list<T> ::simple_link_list() {
-	head = new node<T>;
+	//head = new node<T>; 
+	real_head = std::make_shared<node <T>>();
+	head = real_head.get();
 }
 
 template<typename T>
 simple_link_list<T> :: ~simple_link_list() {
-	delete head;
+	clear();
+	head = nullptr;
+	real_head.reset();
 }
 
 template<typename T>
-bool simple_link_list<T>::insert(int position, const T& e)
+bool simple_link_list<T>::insert(int position, const T& e)   //append=insert(length(), e)
 {
 	node<T>* tmp_ptrL = get_elem_ptr(position - 1);
 	node<T>* tmp_ptr = nullptr;
@@ -97,7 +104,7 @@ inline bool simple_link_list<T>::m_delete(int position)
 template<typename T>
 inline bool simple_link_list<T>::append(const T& e)
 {
-	if (insert(length(), e)) {
+	if (insert(length() + 1, e)) {
 		return true;
 	}
 	else {
@@ -137,6 +144,35 @@ inline bool simple_link_list<T>::set_elem(int position, const T& e)
 	}
 	get_elem_ptr(position)->data = e;
 	return true;
+}
+
+template<typename T>
+inline simple_link_list<T>::simple_link_list(const simple_link_list<T>& source)
+{
+	head = source.head();
+}
+
+template<typename T>
+inline simple_link_list<T>& simple_link_list<T>::operator=(const simple_link_list<T>& source)
+{
+	// TODO: 在此处插入 return 语句
+	if (this != &source) {
+		this ->clear();
+		real_head.reset();
+		real_head = source.real_head;
+		head = real_head.get();
+	}
+	
+	return *this; //便于连用赋值运算符
+}
+
+template<typename T>
+inline void simple_link_list<T>::Traverse(void(*visit)(const T&)) const
+{
+	node <T>* ptr = head -> next;
+	for (; ptr != nullptr; ptr = ptr->next) {
+		(*visit)(ptr->data);
+	}
 }
 
 template<typename T>

@@ -1,21 +1,23 @@
 #include "node.h"
 #include "simple_link_list.h"
 #include <iostream> 
+
+void print_elem(const int& i) {
+	std::cout << i << std::endl;
+}
+
 int main() {
 	simple_link_list<int> myList;
-	int a;
-	myList.insert(1, 2);
 	myList.append(2);
-	myList.append(6);
-	std::cout << myList.length() << std::endl;
-	myList.m_delete(2);
-	std::cout << myList.length() << std::endl;
-	myList.set_elem(1, 9);
-	myList.get_elem(1, a);
-	std::cout << a  << std::endl;
-	std::cout << myList.is_empty() << std::endl;
-	myList.clear();
-	std::cout << myList.is_empty() << std::endl;
-	std::cout << myList.length() << std::endl;
+	myList.append(7);
+	myList.append(9);
+	myList.insert(2, 114);
+	myList.Traverse(&print_elem);
+	simple_link_list<int> sec_list;
+	sec_list = myList;
+	sec_list.Traverse(&print_elem);
+
 	return 0;
 }
+
+
